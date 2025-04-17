@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... (head content remains the same) ... -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Action Now - Footprint Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ... (Navbar remains the same) ... -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+       <div class="container">
+         <a class="navbar-brand" href="#"><i class="fas fa-globe-americas me-1"></i> Climate Action Now</a>
+         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+         <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#facts">Facts</a></li>
+                <li class="nav-item"><a class="nav-link" href="#duties">Duties</a></li>
+                <li class="nav-item"><a class="nav-link" href="#calculator">Calculator</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contributors">Contributors</a></li>
+            </ul>
+         </div>
+     </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-5 pt-5">
+
+        <!-- Home Section -->
+        <section id="home" class="py-5">
+            <!-- ... Home Section Content ... -->
+            <h1 class="text-center mb-4 visually-hidden">Climate Change Awareness</h1>
+            <!-- Climate Clock -->
+            <div id="climate-clock-container" class="text-center mb-5 shadow">
+                <!-- ... Clock content remains the same ... -->
+                <h2 class="h4 fw-normal">Remaining Carbon Budget (1.5°C Path)</h2>
+                <p class="lead mb-1 small">Approx. time left at current emission rates:</p>
+                <div id="climate-clock" class="display-4"> <span id="clock-years">--</span>y : <span id="clock-days">---</span>d : <span id="clock-hours">--</span>h : <span id="clock-minutes">--</span>m : <span id="clock-seconds">--</span>s </div>
+                 <small class="d-block mt-1">Data needs constant update. Ref: <a href="https://mcc-berlin.net/en/research/co2-budget.html" target="_blank" rel="noopener noreferrer">MCC Berlin</a></small>
+            </div>
+
+            <!-- ============================= -->
+            <!-- Information Accordion (EXPANDED CONTENT) -->
+            <!-- ============================= -->
+            <h2 class="text-center mb-4">Understanding Climate Change</h2>
+             <div class="accordion mb-5 shadow-sm" id="infoAccordion">
+                 <!-- Accordion Item 1: Global Warming -->
+                 <div class="accordion-item">
+                     <h2 class="accordion-header" id="headingOne">
+                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            <i class="fas fa-thermometer-half me-2 text-danger"></i> What is Global Warming?
+                         </button>
+                     </h2>
+                     <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#infoAccordion">
+                         <div class="accordion-body">
+                             <strong>Global warming</strong> specifically refers to the long-term increase in Earth's average surface temperature observed since the pre-industrial era (roughly 1850-1900). It's a key component of climate change. This warming is primarily driven by human activities that release heat-trapping greenhouse gases (GHGs) into the atmosphere, such as carbon dioxide (CO₂), methane (CH₄), and nitrous oxide (N₂O). Think of these gases like a thickening blanket around the Earth, trapping more of the sun's heat. While Earth's temperature naturally fluctuates, the current rate of warming is unprecedented in recent geological history and clearly linked to human emissions. It's important to distinguish this long-term *trend* from short-term *weather* variations.
+                             <br><small>Source: <a href="https://climate.nasa.gov/global-warming-vs-climate-change/" target="_blank" rel="noopener noreferrer">NASA</a>, <a href="https://www.ipcc.ch/sr15/" target="_blank" rel="noopener noreferrer">IPCC SR1.5</a></small>
+                         </div>
+                     </div>
+                 </div>
+                 <!-- Accordion Item 2: Climate Change -->
+                 <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingClimateChange">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseClimateChange" aria-expanded="false" aria-controls="collapseClimateChange">
+                           <i class="fas fa-cloud-sun-rain me-2 text-info"></i> What is Climate Change?
+                        </button>
+                    </h2>
+                    <div id="collapseClimateChange" class="accordion-collapse collapse" aria-labelledby="headingClimateChange" data-bs-parent="#infoAccordion">
+                        <div class="accordion-body">
+                            <strong>Climate change</strong> is a broader term encompassing global warming but also including a wider range of long-term changes in our planet's climate system. These shifts involve not just temperature averages, but also changes in precipitation patterns (leading to more intense droughts in some areas and heavier rainfall elsewhere), frequency and intensity of extreme weather events (like hurricanes, heatwaves, wildfires), sea level rise due to melting glaciers and thermal expansion of water, ocean acidification as oceans absorb excess CO₂, and changes in ice cover (glaciers, Arctic sea ice). While Earth's climate has changed naturally over millennia, the scientific consensus, backed by overwhelming evidence, is that human activities since the Industrial Revolution are the dominant driver of the rapid changes observed today. Natural factors play a minor role in the current warming trend compared to human influence.
+                             <br><small>Source: <a href="https://www.un.org/en/climatechange/what-is-climate-change" target="_blank" rel="noopener noreferrer">United Nations</a>, <a href="https://www.ipcc.ch/report/ar6/wg1/" target="_blank" rel="noopener noreferrer">IPCC AR6 WGI</a></small>
+                        </div>
+                    </div>
+                 </div>
+                 <!-- Accordion Item 3: Causes -->
+                 <div class="accordion-item">
+                     <h2 class="accordion-header" id="headingTwo">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                              <i class="fas fa-smog me-2 text-secondary"></i> What Causes Current Climate Change?
+                          </button>
+                      </h2>
+                     <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#infoAccordion">
+                          <div class="accordion-body">
+                            The primary driver is the human-caused increase in atmospheric greenhouse gases (GHGs), mainly:
+                            <ul>
+                                <li><strong>Burning Fossil Fuels (Coal, Oil, Natural Gas):</strong> This is the largest source, releasing vast amounts of CO₂ during combustion for electricity generation, transportation (cars, planes, ships), industrial processes, and heating buildings.</li>
+                                <li><strong>Deforestation & Land Use Change:</strong> Clearing forests for agriculture, logging, or development reduces the planet's capacity to absorb CO₂ (trees act as carbon sinks). Burning forests and disturbing soils also releases stored carbon.</li>
+                                <li><strong>Agriculture:</strong> Livestock digestion and manure management release significant methane (CH₄), a potent GHG). Rice cultivation also releases methane. The use of nitrogen-based fertilizers releases nitrous oxide (N₂O), another powerful GHG.</li>
+                                <li><strong>Industrial Processes:</strong> Manufacturing cement, steel, chemicals, and other goods often involves chemical reactions that release CO₂ or other GHGs. Certain industrial processes also release potent synthetic GHGs like hydrofluorocarbons (HFCs).</li>
+                                <li><strong>Waste Management:</strong> Decomposition of organic waste in landfills under anaerobic (oxygen-poor) conditions produces methane.</li>
+                            </ul>
+                            These activities have drastically increased GHG concentrations far above natural levels seen for hundreds of thousands of years, intensifying the natural greenhouse effect and causing the planet to warm.
+                            <br><small>Source: <a href="https://www.epa.gov/ghgemissions/sources-greenhouse-gas-emissions" target="_blank" rel="noopener noreferrer">EPA</a>, <a href="https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-5/" target="_blank" rel="noopener noreferrer">IPCC AR6 WGI Ch.5</a></small>
+                         </div>
+                     </div>
+                 </div>
+                 <!-- Accordion Item 4: Impacts -->
+                 <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            <i class="fas fa-triangle-exclamation me-2 text-warning"></i> Why Does Climate Change Matter? (Impacts)
+                        </button>
+                    </h2>
+                   <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#infoAccordion">
+                        <div class="accordion-body">
+                           The consequences are far-reaching, impacting ecosystems, human societies, and economies globally. Key impacts include:
+                           <ul>
+                               <li><strong>Rising Temperatures:</strong> Leads to more frequent and intense heatwaves, increasing heat-related illnesses and deaths, straining energy grids, and impacting agriculture.</li>
+                               <li><strong>Changes in Precipitation:</strong> Causes more intense droughts in some regions, threatening water supplies and farming, while other regions experience heavier rainfall and flooding, damaging infrastructure and homes.</li>
+                               <li><strong>Extreme Weather Events:</strong> Increases the frequency and/or intensity of hurricanes/cyclones/typhoons, wildfires, floods, and droughts, leading to widespread destruction and displacement.</li>
+                               <li><strong>Sea Level Rise:</strong> Threatens coastal communities and ecosystems through inundation, increased erosion, saltwater intrusion into freshwater sources, and more damaging storm surges. Driven by melting ice sheets/glaciers and thermal expansion of ocean water.</li>
+                               <li><strong>Ocean Changes:</strong> Oceans absorb excess heat (warming) and CO₂ (acidification). Warming harms marine life (like coral bleaching) and alters currents. Acidification harms shellfish and plankton, disrupting marine food webs.</li>
+                               <li><strong>Biodiversity Loss:</strong> Habitats shift or disappear faster than many species can adapt, leading to increased extinction rates on land and in the oceans.</li>
+                               <li><strong>Food & Water Security:</strong> Disrupts agriculture through changing growing seasons, pests, water availability, and extreme events, potentially leading to food shortages and price increases. Water scarcity is exacerbated in many regions.</li>
+                               <li><strong>Health Impacts:</strong> Includes heat stress, respiratory problems from worsened air pollution (linked to fossil fuels and wildfires), spread of vector-borne diseases (like malaria, dengue fever) as insects expand their range, and impacts on mental health (eco-anxiety, disaster trauma).</li>
+                               <li><strong>Climate Justice & Equity:</strong> Impacts disproportionately affect vulnerable populations (low-income communities, indigenous peoples, developing nations) who often contributed least to the problem but have fewer resources to adapt.</li>
+                           </ul>
+                           These impacts are interconnected and often create cascading effects, highlighting the urgent need for action.
+                           <br><small>Source: <a href="https://www.ipcc.ch/report/ar6/wg2/" target="_blank" rel="noopener noreferrer">IPCC AR6 WG2 (Impacts)</a></small>
+                        </div>
+                    </div>
+                </div>
+                <!-- Accordion Item 5: Solutions -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingFour">
+                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            <i class="fas fa-seedling me-2 text-success"></i> What Can Be Done? (Solutions)
+                         </button>
+                     </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#infoAccordion">
+                         <div class="accordion-body">
+                            Addressing climate change requires ambitious and coordinated efforts globally across two main fronts:
+                             <ol>
+                                 <li><strong>Mitigation (Reducing Greenhouse Gas Emissions):</strong> A rapid transition away from fossil fuels is paramount. Key strategies include:
+                                     <ul>
+                                         <li>Dramatically scaling up renewable energy sources (solar, wind, geothermal, sustainable hydro).</li>
+                                         <li>Improving energy efficiency in buildings, industry, and transportation.</li>
+                                         <li>Electrifying transport (EVs, public transit) and using sustainable fuels for sectors harder to electrify (aviation, shipping).</li>
+                                         <li>Protecting and restoring forests, wetlands, and other ecosystems that absorb CO₂ (Nature-Based Solutions).</li>
+                                         <li>Shifting to sustainable agricultural practices (improving soil health, reducing methane, optimizing fertilizers).</li>
+                                         <li>Developing and deploying carbon capture technologies (especially for industries hard to fully decarbonize, used cautiously).</li>
+                                         <li>Implementing policies like carbon pricing (taxes or cap-and-trade) to incentivize emission reductions.</li>
+                                         <li>Promoting circular economy principles to reduce waste and resource extraction.</li>
+                                     </ul>
+                                 </li>
+                                <li><strong>Adaptation (Adjusting to Unavoidable Impacts):</strong> Since some climate change is already locked in, societies must adapt. Strategies include:
+                                    <ul>
+                                         <li>Developing drought-resistant crops and water management systems.</li>
+                                         <li>Building or reinforcing infrastructure to withstand extreme weather and sea-level rise (e.g., flood defenses).</li>
+                                         <li>Establishing early warning systems for climate-related disasters.</li>
+                                         <li>Protecting coastal ecosystems like mangroves and coral reefs that provide natural defenses.</li>
+                                         <li>Implementing public health measures for heatwaves and changing disease patterns.</li>
+                                         <li>Creating social safety nets and insurance mechanisms for climate-related losses.</li>
+                                     </ul>
+                                 </li>
+                             </ol>
+                             Success requires international cooperation (like the Paris Agreement), strong national policies, business innovation and investment, community-level initiatives, and conscious choices by individuals to reduce their own footprint and advocate for systemic change.
+                             <br><small>Source: <a href="https://www.ipcc.ch/report/ar6/wg3/" target="_blank" rel="noopener noreferrer">IPCC AR6 WG3 (Mitigation)</a>, <a href="https://drawdown.org/solutions" target="_blank" rel="noopener noreferrer">Project Drawdown</a></small>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+
+             <!-- Weather Section -->
+             <section id="weather-section" class="mb-5 p-4 rounded bg-light shadow-sm">
+                <!-- ... Weather content remains the same ... -->
+                <h2 class="text-center mb-4">Weather Today & Tomorrow's Climate</h2>
+                <div id="weather-info" class="text-center mb-4 p-3 bg-white border rounded"><p><span class="spinner-border spinner-border-sm"></span> Checking weather...</p></div>
+                <form id="manual-location-form" class="row g-3 justify-content-center mt-3 d-none">
+                     <!-- ... Manual form inputs remain the same ... -->
+                    <div class="col-md-3"><input type="text" class="form-control" id="cityInput" placeholder="City" required></div>
+                    <div class="col-md-3"><input type="text" class="form-control" id="stateInput" placeholder="State (Optional)"></div>
+                    <div class="col-md-3"><select id="countryInput" class="form-select"><option value="IN" selected>India</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="AU">Australia</option></select></div>
+                    <div class="col-auto"><button type="submit" class="btn btn-primary">Get Weather</button></div>
+                 </form>
+                 <div id="future-climate" class="mt-5">
+                      <!-- ... Future climate cards remain the same ... -->
+                       <h3 class="text-center mb-4">Projected Climate Impacts for <span class="location-name fw-bold text-primary">Your Area</span></h3>
+                       <p class="text-center text-muted small">(General projections based on models)</p>
+                       <div class="row g-4">
+                          <div class="col-md-4"><div class="card h-100 text-center scenario-card scenario-1-5 shadow-sm"><div class="card-body d-flex flex-column"><h4 class="card-title">+1.5°C Warming</h4><p class="card-text flex-grow-1">In <span class="location-name">this region</span>: More frequent heatwaves, shifts in rainfall, stress on ecosystems.</p><small class="text-muted mt-auto">Based on IPCC SR1.5</small></div></div></div>
+                          <div class="col-md-4"><div class="card h-100 text-center scenario-card scenario-2-0 shadow-sm"><div class="card-body d-flex flex-column"><h4 class="card-title">+2.0°C Warming</h4><p class="card-text flex-grow-1">In <span class="location-name">this region</span>: Hotter summers, drought/extreme rain risks, agri challenges.</p><small class="text-muted mt-auto">Based on IPCC AR6</small></div></div></div>
+                           <div class="col-md-4"><div class="card h-100 text-center scenario-card scenario-3-0 shadow-sm"><div class="card-body d-flex flex-column"><h4 class="card-title">+3.0°C+ Warming</h4><p class="card-text flex-grow-1">In <span class="location-name">this region</span>: Risks escalate: Dangerous heat, severe water issues, crop failures, major health/stability threats.</p><small class="text-muted mt-auto">Based on IPCC AR6</small></div></div></div>
+                       </div>
+                 </div>
+             </section>
+        </section>
+
+        <!-- Facts & Figures Section -->
+        <section id="facts" class="py-5 bg-light">
+            <!-- ... Facts content remains the same ... -->
+            <h2 class="text-center mb-4">Key Facts & Figures</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4 d-flex"><div class="card h-100 fact-card w-100 shadow-sm"><div class="card-body d-flex flex-column"><h5 class="card-title">📈 Record CO₂</h5><p class="card-text flex-grow-1">Atmospheric CO₂ recently <a href="https://gml.noaa.gov/ccgg/trends/" target="_blank"> > 420 ppm</a> (highest ~3M years).</p><a href="https://gml.noaa.gov/ccgg/trends/" target="_blank" class="btn btn-sm btn-outline-primary mt-2 align-self-start">NOAA</a></div></div></div>
+                <div class="col-md-6 col-lg-4 d-flex"><div class="card h-100 fact-card w-100 shadow-sm"><div class="card-body d-flex flex-column"><h5 class="card-title">🌡️ Hottest Decade</h5><p class="card-text flex-grow-1">2011-2020 warmest recorded. Recent years break records.</p><a href="https://climate.nasa.gov/vital-signs/global-temperature/" target="_blank" class="btn btn-sm btn-outline-primary mt-2 align-self-start">NASA</a></div></div></div>
+                <div class="col-md-6 col-lg-4 d-flex"><div class="card h-100 fact-card w-100 shadow-sm"><div class="card-body d-flex flex-column"><h5 class="card-title">🧊 Melting Ice</h5><p class="card-text flex-grow-1">Arctic sea ice declining. Ice sheet loss accelerates sea level rise.</p><a href="https://sealevel.nasa.gov/" target="_blank" class="btn btn-sm btn-outline-primary mt-2 align-self-start">NASA</a></div></div></div>
+                <div class="col-md-6 col-lg-4 d-flex"><div class="card h-100 fact-card w-100 shadow-sm"><div class="card-body d-flex flex-column"><h5 class="card-title">⚡ Extreme Weather</h5><p class="card-text flex-grow-1">Climate change increases frequency/intensity of extremes.</p><a href="https://www.ipcc.ch/report/ar6/wg1/" target="_blank" class="btn btn-sm btn-outline-primary mt-2 align-self-start">IPCC</a></div></div></div>
+                <div class="col-md-6 col-lg-4 d-flex"><div class="card h-100 fact-card w-100 shadow-sm"><div class="card-body d-flex flex-column"><h5 class="card-title">💰 Costs of Inaction</h5><p class="card-text flex-grow-1">Delaying action leads to greater long-term damage costs.</p><a href="https://www.imf.org/en/Topics/climate-change" target="_blank" class="btn btn-sm btn-outline-primary mt-2 align-self-start">IMF</a></div></div></div>
+                <div class="col-md-6 col-lg-4 d-flex"><div class="card h-100 fact-card w-100 shadow-sm"><div class="card-body d-flex flex-column"><h5 class="card-title">🇮🇳 Nat. Commitments</h5><p class="card-text flex-grow-1">E.g., India targets 45% emissions intensity reduction by 2030 (vs 2005).</p><a href="https://unfccc.int/NDCREG" target="_blank" class="btn btn-sm btn-outline-primary mt-2 align-self-start">UNFCCC</a></div></div></div>
+             </div>
+        </section>
+
+         <!-- Duties Section -->
+        <section id="duties" class="py-5">
+            <!-- ... Duties content remains the same ... -->
+            <h2 class="text-center mb-4">Our Shared & Role-Specific Duties</h2>
+             <div class="mb-5 p-4 border rounded bg-white shadow-sm"> 
+                 <h3><i class="fas fa-users me-2 text-primary"></i> Collective Actions</h3>
+                 <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="fas fa-recycle me-2 text-success"></i>Reduce, Reuse, Recycle</li>
+                    <li class="list-group-item"><i class="fas fa-plug me-2 text-warning"></i>Conserve Energy</li>
+                    <li class="list-group-item"><i class="fas fa-seedling me-2 text-success"></i>Sustainable Diet (less meat/waste)</li>
+                    <li class="list-group-item"><i class="fas fa-bicycle me-2 text-info"></i>Smart Transport (less flying/driving)</li>
+                    <li class="list-group-item"><i class="fas fa-tint me-2 text-primary"></i>Conserve Water</li>
+                    <li class="list-group-item"><i class="fas fa-leaf me-2 text-success"></i>Support Nature & Conservation</li>
+                    <li class="list-group-item"><i class="fas fa-bullhorn me-2 text-secondary"></i>Speak Up & Engage</li>
+                    <li class="list-group-item"><i class="fas fa-info-circle me-2 text-secondary"></i>Stay Informed</li>
+                 </ul>
+             </div>
+            <div class="p-4 border rounded bg-white shadow-sm"> 
+                <h3><i class="fas fa-briefcase me-2 text-secondary"></i> Role-Specific Contributions</h3>
+                 <div class="mb-3"><label for="role-selector" class="form-label">Select Industry/Category:</label><select class="form-select" id="role-selector"><option selected disabled value="">Choose...</option></select></div>
+                 <div id="role-specific-duties-display" class="mt-4"><p class="text-muted">Select a category to see role-specific actions.</p></div>
+                 <hr>
+                 <p class="mt-3 text-center text-muted small">Missing role? <a href="#" data-bs-toggle="modal" data-bs-target="#suggestRoleModal">Suggest it!</a></p>
+             </div>
+        </section>
+
+        <!-- Carbon Emission Calculator Section -->
+        <section id="calculator" class="py-5 bg-light">
+             <div class="container">
+                 <h2 class="text-center mb-4">Estimate Your Carbon Footprint</h2>
+                 <p class="text-center lead mb-4">Follow the steps to calculate your impact.</p>
+                <div class="card p-4 p-md-5 shadow-sm">
+                     <!-- Step Indicator -->
+                     <div id="calculator-steps" class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                        <div class="step-item active" data-step="1"><span class="step-number">1</span><span class="step-label d-none d-sm-inline">Setup</span></div><div class="step-line"></div>
+                        <div class="step-item" data-step="2"><span class="step-number">2</span><span class="step-label d-none d-sm-inline">House</span></div><div class="step-line"></div>
+                        <div class="step-item" data-step="3"><span class="step-number">3</span><span class="step-label d-none d-sm-inline">Transport</span></div><div class="step-line"></div>
+                        <div class="step-item" data-step="4"><span class="step-number">4</span><span class="step-label d-none d-sm-inline">Lifestyle</span></div><div class="step-line"></div>
+                        <div class="step-item" data-step="5"><span class="step-number">5</span><span class="step-label d-none d-sm-inline">Results</span></div>
+                     </div>
+                    <div id="calculator-content">
+                        <!-- ================== START: Calculator Step Content ================== -->
+
+                        <!-- Step 1: Setup -->
+                        <div id="step-1-content" class="calculator-step">
+                            <h3 class="text-center mb-4 h4 fw-normal">1. Setup Your Calculation</h3>
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <label for="calc-country" class="form-label">Select Your Country:</label>
+                                    <select id="calc-country" class="form-select">
+                                        <option value="IN" selected>India (₹, km)</option>
+                                        <option value="US">United States ($, miles)</option>
+                                        <option value="GB">United Kingdom (£, miles)</option>
+                                        <!-- Add more countries as needed -->
+                                    </select>
+                                     <small class="form-text text-muted">This sets average emission factors and units.</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="calc-people" class="form-label">Household Size:</label>
+                                    <input type="number" id="calc-people" class="form-control" min="1" value="1" step="1">
+                                    <small class="form-text text-muted">Number of people living in your home (including you).</small>
+                                </div>
+                            </div>
+                            <hr class="my-4">
+                            <h4 class="text-center mb-3 h5 fw-normal">Sections to Include:</h4>
+                            <div id="include-sections" class="row g-3 mb-4">
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="include-household" value="household" checked>
+                                        <label class="form-check-label" for="include-household"><i class="fas fa-home"></i> Household</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="include-flights" value="flights" checked>
+                                        <label class="form-check-label" for="include-flights"><i class="fas fa-plane"></i> Flights</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="include-car" value="car" checked>
+                                        <label class="form-check-label" for="include-car"><i class="fas fa-car"></i> Car</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="include-motorbike" value="motorbike" checked>
+                                        <label class="form-check-label" for="include-motorbike"><i class="fas fa-motorcycle"></i> Motorbike</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="include-public" value="public_transport" checked>
+                                        <label class="form-check-label" for="include-public"><i class="fas fa-bus-alt"></i> Bus/Rail/Taxi</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="include-secondary" value="secondary" checked>
+                                        <label class="form-check-label" for="include-secondary"><i class="fas fa-shopping-basket"></i> Lifestyle</label>
+                                    </div>
+                                </div>
+                            </div>
+                             <p class="text-muted small text-center">Uncheck sections you don't want to calculate or have no data for.</p>
+                        </div>
+
+                        <!-- Step 2: Household -->
+                        <div id="step-2-content" class="calculator-step" style="display: none;">
+                            <h3 class="text-center mb-4 h4 fw-normal">2. Household Energy Use</h3>
+                            <p class="text-center text-muted small mb-4">Enter TOTAL household consumption for the year. Results will be divided by <span id="household-share-display">1</span> person(s).</p>
+                            <div class="row g-3">
+                                <!-- Electricity -->
+                                <div class="col-md-6">
+                                    <label for="house-electricity" class="form-label">Electricity</label>
+                                    <div class="input-group">
+                                        <input type="number" step="any" min="0" id="house-electricity" class="form-control calculator-input" placeholder="0">
+                                        <span class="input-group-text small">kWh / year</span>
+                                    </div>
+                                     <small class="form-text text-muted" data-bs-toggle="tooltip" title="Check electricity bills. Avg Indian household ~90 kWh/month (~1080/yr).">Find on bill (kWh)</small>
+                                </div>
+                                <!-- Natural Gas -->
+                                <div class="col-md-6">
+                                    <label for="house-natgas" class="form-label">Natural Gas</label>
+                                    <div class="input-group">
+                                        <input type="number" step="any" min="0" id="house-natgas" class="form-control calculator-input" placeholder="0">
+                                        <select id="house-natgas-unit" class="form-select flex-grow-0 w-auto">
+                                            <option value="kwh">kWh</option>
+                                            <option value="m3">m³</option>
+                                            <option value="therms">Therms</option>
+                                        </select>
+                                        <span class="input-group-text small">/ year</span>
+                                    </div>
+                                     <small class="form-text text-muted" data-bs-toggle="tooltip" title="Used for heating/cooking. Check gas bills. Units vary by region.">Check gas bills</small>
+                                </div>
+                                <!-- Heating Oil -->
+                                <div class="col-md-6">
+                                    <label for="house-heating-oil" class="form-label">Heating Oil</label>
+                                    <div class="input-group">
+                                        <input type="number" step="any" min="0" id="house-heating-oil" class="form-control calculator-input" placeholder="0">
+                                        <select id="house-heating-oil-unit" class="form-select flex-grow-0 w-auto">
+                                             <option value="litres" selected>Litres</option>
+                                             <option value="gallons_us">US Gallons</option>
+                                             <option value="gallons_uk">UK Gallons</option>
+                                         </select>
+                                        <span class="input-group-text small">/ year</span>
+                                    </div>
+                                    <small class="form-text text-muted" data-bs-toggle="tooltip" title="Kerosene or similar oil used for home heating.">Check delivery receipts</small>
+                                </div>
+                                <!-- Coal -->
+                                <div class="col-md-6">
+                                    <label for="house-coal" class="form-label">Coal</label>
+                                    <div class="input-group">
+                                        <input type="number" step="any" min="0" id="house-coal" class="form-control calculator-input" placeholder="0">
+                                        <span class="input-group-text small">Tonnes / year</span>
+                                    </div>
+                                     <small class="form-text text-muted" data-bs-toggle="tooltip" title="Coal used for home heating. Enter in tonnes (1 tonne = 1000 kg).">Uncommon, use if applicable</small>
+                                </div>
+                                <!-- LPG -->
+                                <div class="col-md-6">
+                                    <label for="house-lpg" class="form-label">LPG (Gas Cylinders)</label>
+                                    <div class="input-group">
+                                        <input type="number" step="any" min="0" id="house-lpg" class="form-control calculator-input" placeholder="0">
+                                        <span class="input-group-text small">Litres / year</span>
+                                    </div>
+                                    <small class="form-text text-muted" data-bs-toggle="tooltip" title="Common in India (cooking gas). 1 standard domestic cylinder ~14.2 kg ≈ 28 litres. Estimate total litres used per year.">Estimate yearly litres</small>
+                                </div>
+                                <!-- Propane -->
+                                <div class="col-md-6">
+                                    <label for="house-propane" class="form-label">Propane</label>
+                                    <div class="input-group">
+                                        <input type="number" step="any" min="0" id="house-propane" class="form-control calculator-input" placeholder="0">
+                                        <select id="house-propane-unit" class="form-select flex-grow-0 w-auto">
+                                            <option value="litres">Litres</option>
+                                            <option value="gallons_us">US Gallons</option>
+                                        </select>
+                                        <span class="input-group-text small">/ year</span>
+                                    </div>
+                                    <small class="form-text text-muted" data-bs-toggle="tooltip" title="Propane tanks used for heating/cooking.">Check delivery receipts</small>
+                                </div>
+                                <!-- Wood -->
+                                <div class="col-md-6">
+                                    <label for="house-wood" class="form-label">Wood Pellets/Chips</label>
+                                    <div class="input-group">
+                                        <input type="number" step="any" min="0" id="house-wood" class="form-control calculator-input" placeholder="0">
+                                        <span class="input-group-text small">Tonnes / year</span>
+                                    </div>
+                                    <small class="form-text text-muted" data-bs-toggle="tooltip" title="Wood burned for heating. Use tonnes (1 tonne = 1000 kg).">Estimate yearly tonnes</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Transport -->
+                        <div id="step-3-content" class="calculator-step" style="display: none;">
+                            <h3 class="text-center mb-4 h4 fw-normal">3. Your Personal Transportation (Annual)</h3>
+                             <p class="text-center text-muted small mb-4">Enter distances for your own travel over the past year.</p>
+
+                            <div id="no-transport-selected" class="alert alert-warning text-center" style="display: none;">
+                                No transport types selected in Step 1. You can skip this step.
+                            </div>
+
+                            <!-- Flights -->
+                            <div id="transport-flights" class="mb-4 transport-subsection">
+                                <h4 class="h5 mb-3"><i class="fas fa-plane me-2 text-info"></i> Flights</h4>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label for="flight-domestic" class="form-label">Domestic (Return Trips)</label>
+                                        <input type="number" min="0" step="1" id="flight-domestic" class="form-control calculator-input" placeholder="0" data-bs-toggle="tooltip" title="Short flights within your country (e.g., Delhi-Mumbai). Enter number of return trips.">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="flight-short" class="form-label">Short-Haul Intl. (Return)</label>
+                                        <input type="number" min="0" step="1" id="flight-short" class="form-control calculator-input" placeholder="0" data-bs-toggle="tooltip" title="Flights under ~3 hours (e.g., India to SE Asia/Middle East, intra-Europe). Enter number of return trips.">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="flight-long" class="form-label">Long-Haul Intl. (Return)</label>
+                                        <input type="number" min="0" step="1" id="flight-long" class="form-control calculator-input" placeholder="0" data-bs-toggle="tooltip" title="Long flights over ~3-6 hours (e.g., India to Europe/US). Enter number of return trips.">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Car -->
+                            <div id="transport-car" class="mb-4 transport-subsection">
+                                <h4 class="h5 mb-3"><i class="fas fa-car me-2 text-danger"></i> Car</h4>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="car1-distance" class="form-label">Annual Distance Driven</label>
+                                        <div class="input-group">
+                                             <input type="number" step="any" min="0" id="car1-distance" class="form-control calculator-input" placeholder="0">
+                                            <span class="input-group-text small distance-unit-short">km</span>
+                                             <span class="input-group-text small">/ year</span>
+                                         </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="car1-fuel" class="form-label">Fuel Type</label>
+                                        <select id="car1-fuel" class="form-select calculator-input">
+                                             <option value="petrol" selected>Petrol</option>
+                                             <option value="diesel">Diesel</option>
+                                             <option value="hybrid">Hybrid</option>
+                                             <option value="lpg">LPG</option>
+                                             <option value="cng">CNG</option>
+                                             <option value="electric">Electric</option>
+                                         </select>
+                                          <small id="electric-car-factor-info" class="form-text text-muted mt-1" style="display:none;" data-bs-toggle="tooltip" title="Electric car emissions depend heavily on the electricity grid's carbon intensity (set by your country selection).">Emissions depend on grid</small>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted mt-2 d-block">Enter total personal distance in your primary car. Leave blank if you don't use a car.</small>
+                                <!-- Add inputs for a second car if needed -->
+                            </div>
+
+                             <!-- Motorbike -->
+                            <div id="transport-motorbike" class="mb-4 transport-subsection">
+                                 <h4 class="h5 mb-3"><i class="fas fa-motorcycle me-2 text-warning"></i> Motorbike</h4>
+                                 <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="bike1-distance" class="form-label">Annual Distance Ridden</label>
+                                         <div class="input-group">
+                                             <input type="number" step="any" min="0" id="bike1-distance" class="form-control calculator-input" placeholder="0">
+                                             <span class="input-group-text small distance-unit-short">km</span>
+                                             <span class="input-group-text small">/ year</span>
+                                         </div>
+                                     </div>
+                                    <div class="col-md-6">
+                                        <label for="bike1-size" class="form-label">Engine Size</label>
+                                        <select id="bike1-size" class="form-select calculator-input">
+                                             <option value="small">Small (up to 125cc)</option>
+                                             <option value="medium" selected>Medium (125cc - 500cc)</option>
+                                             <option value="large">Large (over 500cc)</option>
+                                         </select>
+                                     </div>
+                                 </div>
+                                  <small class="form-text text-muted mt-2 d-block">Enter total personal distance on your primary motorbike/scooter.</small>
+                             </div>
+
+                             <!-- Bus & Rail -->
+                            <div id="transport-busrail" class="transport-subsection">
+                                 <h4 class="h5 mb-3"><i class="fas fa-bus-alt me-2 text-primary"></i> Bus, Rail & Taxi</h4>
+                                 <div class="row g-3">
+                                    <div class="col-md-4 col-sm-6">
+                                         <label for="pt-bus" class="form-label">Bus (Local)</label>
+                                         <div class="input-group"><input type="number" step="any" min="0" id="pt-bus" class="form-control calculator-input" placeholder="0"><span class="input-group-text small distance-unit-short">km</span><span class="input-group-text small">/yr</span></div>
+                                     </div>
+                                    <div class="col-md-4 col-sm-6">
+                                         <label for="pt-coach" class="form-label">Coach (Long Dist.)</label>
+                                         <div class="input-group"><input type="number" step="any" min="0" id="pt-coach" class="form-control calculator-input" placeholder="0"><span class="input-group-text small distance-unit-short">km</span><span class="input-group-text small">/yr</span></div>
+                                     </div>
+                                     <div class="col-md-4 col-sm-6">
+                                        <label for="pt-train-local" class="form-label">Train (Local/Metro)</label>
+                                        <div class="input-group"><input type="number" step="any" min="0" id="pt-train-local" class="form-control calculator-input" placeholder="0"><span class="input-group-text small distance-unit-short">km</span><span class="input-group-text small">/yr</span></div>
+                                     </div>
+                                     <div class="col-md-4 col-sm-6">
+                                        <label for="pt-train-long" class="form-label">Train (Long Dist.)</label>
+                                        <div class="input-group"><input type="number" step="any" min="0" id="pt-train-long" class="form-control calculator-input" placeholder="0"><span class="input-group-text small distance-unit-short">km</span><span class="input-group-text small">/yr</span></div>
+                                     </div>
+                                      <div class="col-md-4 col-sm-6">
+                                         <label for="pt-tram" class="form-label">Tram/Subway</label>
+                                         <div class="input-group"><input type="number" step="any" min="0" id="pt-tram" class="form-control calculator-input" placeholder="0"><span class="input-group-text small distance-unit-short">km</span><span class="input-group-text small">/yr</span></div>
+                                         <!-- <input type="hidden" id="pt-subway" value="0"> Combined with Tram for factor lookup -->
+                                     </div>
+                                      <div class="col-md-4 col-sm-6">
+                                         <label for="pt-taxi" class="form-label">Taxi/Ride Share</label>
+                                         <div class="input-group"><input type="number" step="any" min="0" id="pt-taxi" class="form-control calculator-input" placeholder="0"><span class="input-group-text small distance-unit-short">km</span><span class="input-group-text small">/yr</span></div>
+                                     </div>
+                                 </div>
+                                 <small class="form-text text-muted mt-2 d-block">Estimate your total annual distance using each mode.</small>
+                             </div>
+                        </div>
+
+                        <!-- Step 4: Lifestyle (Secondary) -->
+                        <div id="step-4-content" class="calculator-step" style="display: none;">
+                            <h3 class="text-center mb-4 h4 fw-normal">4. Lifestyle & Consumption (Annual Spending)</h3>
+                            <p class="text-center text-muted small mb-4">Estimate your personal annual spending in various categories. This provides a rough estimate of emissions from goods and services (secondary footprint).</p>
+                            <div class="row g-3">
+                                <!-- Food -->
+                                <div class="col-md-6">
+                                    <label for="sec-food-diet" class="form-label">Primary Diet Type</label>
+                                    <select id="sec-food-diet" class="form-select calculator-input mb-2">
+                                        <option value="average" selected>Average (Omnivore)</option>
+                                        <option value="heavy_meat">Meat Heavy</option>
+                                        <option value="medium_meat">Medium Meat</option>
+                                        <option value="low_meat">Low Meat</option>
+                                        <option value="pescatarian">Pescatarian</option>
+                                        <option value="vegetarian">Vegetarian</option>
+                                        <option value="vegan">Vegan</option>
+                                    </select>
+                                    <label for="sec-food-amount" class="form-label">Total Annual Food & Drink Spending</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text small unit-currency">₹</span>
+                                        <input type="number" step="any" min="0" id="sec-food-amount" class="form-control calculator-input" placeholder="0">
+                                         <span class="input-group-text small">/ year</span>
+                                    </div>
+                                     <small class="form-text text-muted" data-bs-toggle="tooltip" title="Estimate your total personal spend on groceries, dining out, drinks etc. per year.">Estimate yearly food costs</small>
+                                </div>
+
+                                <!-- Other Goods -->
+                                <div class="col-md-6">
+                                    <label for="sec-clothing" class="form-label">Clothing & Footwear</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text small unit-currency">₹</span>
+                                        <input type="number" step="any" min="0" id="sec-clothing" class="form-control calculator-input" placeholder="0">
+                                        <span class="input-group-text small">/ year</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="sec-pharmaceuticals" class="form-label">Health/Pharmaceuticals</label>
+                                    <div class="input-group">
+                                         <span class="input-group-text small unit-currency">₹</span>
+                                         <input type="number" step="any" min="0" id="sec-pharmaceuticals" class="form-control calculator-input" placeholder="0">
+                                         <span class="input-group-text small">/ year</span>
+                                     </div>
+                                 </div>
+                                <div class="col-md-6">
+                                     <label for="sec-paper" class="form-label">Paper Products/Stationery</label>
+                                     <div class="input-group">
+                                         <span class="input-group-text small unit-currency">₹</span>
+                                         <input type="number" step="any" min="0" id="sec-paper" class="form-control calculator-input" placeholder="0">
+                                         <span class="input-group-text small">/ year</span>
+                                     </div>
+                                 </div>
+                                <div class="col-md-6">
+                                     <label for="sec-electronics" class="form-label">Electronics & Gadgets</label>
+                                     <div class="input-group">
+                                         <span class="input-group-text small unit-currency">₹</span>
+                                         <input type="number" step="any" min="0" id="sec-electronics" class="form-control calculator-input" placeholder="0">
+                                         <span class="input-group-text small">/ year</span>
+                                     </div>
+                                </div>
+                                <div class="col-md-6">
+                                     <label for="sec-furniture" class="form-label">Furniture & Furnishings</label>
+                                     <div class="input-group">
+                                         <span class="input-group-text small unit-currency">₹</span>
+                                         <input type="number" step="any" min="0" id="sec-furniture" class="form-control calculator-input" placeholder="0">
+                                         <span class="input-group-text small">/ year</span>
+                                     </div>
+                                </div>
+                                <!-- Services -->
+                                 <div class="col-md-6">
+                                    <label for="sec-hotels" class="form-label">Hotels & Accommodation</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text small unit-currency">₹</span>
+                                        <input type="number" step="any" min="0" id="sec-hotels" class="form-control calculator-input" placeholder="0">
+                                        <span class="input-group-text small">/ year</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                     <label for="sec-telecom" class="form-label">Telecom (Phone, Internet)</label>
+                                     <div class="input-group">
+                                         <span class="input-group-text small unit-currency">₹</span>
+                                         <input type="number" step="any" min="0" id="sec-telecom" class="form-control calculator-input" placeholder="0">
+                                         <span class="input-group-text small">/ year</span>
+                                     </div>
+                                </div>
+                                <div class="col-md-6">
+                                     <label for="sec-finance" class="form-label">Financial Services/Insurance</label>
+                                     <div class="input-group">
+                                         <span class="input-group-text small unit-currency">₹</span>
+                                         <input type="number" step="any" min="0" id="sec-finance" class="form-control calculator-input" placeholder="0">
+                                         <span class="input-group-text small">/ year</span>
+                                     </div>
+                                </div>
+                                <div class="col-md-6">
+                                     <label for="sec-recreation" class="form-label">Recreation & Culture</label>
+                                     <div class="input-group">
+                                         <span class="input-group-text small unit-currency">₹</span>
+                                         <input type="number" step="any" min="0" id="sec-recreation" class="form-control calculator-input" placeholder="0">
+                                         <span class="input-group-text small">/ year</span>
+                                     </div>
+                                </div>
+                                <!-- Add more inputs: Appliances, Vehicles (Purchase), etc. if factors exist -->
+                                <input type="hidden" id="sec-appliances" value="0"> <!-- Example hidden placeholder if needed -->
+                                <input type="hidden" id="sec-vehicles" value="0"> <!-- Example hidden placeholder if needed -->
+
+                            </div>
+                             <p class="text-muted small text-center mt-3">Note: Spending-based estimates are less precise than direct usage data.</p>
+                        </div>
+
+                        <!-- Step 5: Results -->
+                        <div id="step-5-content" class="calculator-step" style="display: none;">
+                            <div class="results-container text-center">
+                                <h3 class="mb-3">Your Estimated Annual Carbon Footprint</h3>
+                                <p class="lead">Total per person:</p>
+                                <div class="display-4 text-success mb-2">
+                                    <span id="grand-total-footprint">--.--</span> <small class="fs-4 text-muted">tonnes CO₂e / year</small>
+                                </div>
+                                <p class="text-muted small mb-4">(<span id="grand-total-footprint-copy">--.--</span> tonnes = <span id="collective-footprint-results">---</span> kg CO₂e)</p>
+
+                                <!-- Comparison -->
+                                <div class="card bg-light p-3 mb-4 shadow-sm border">
+                                    <p class="mb-1">This footprint is <strong id="comparison-text-results">compared to</strong> the average per person in <strong id="results-country-name">your country</strong> (<strong id="results-avg-footprint">N/A</strong> tCO₂e).</p>
+                                    <small class="text-muted">(Calculated for <span id="results-household-size">1</span> person in <span class="location-name">your region</span>)</small>
+                                </div>
+
+                                <!-- Breakdown -->
+                                <div class="mb-4 text-start">
+                                    <h4 class="h5 text-center mb-3">Breakdown by Category:</h4>
+                                     <div id="results-breakdown-details" class="row g-2 justify-content-center">
+                                        <p class="text-muted col-12 text-center">Calculating breakdown...</p>
+                                         <!-- Breakdown items will be injected here by JS -->
+                                     </div>
+                                 </div>
+
+                                <!-- Reduction Tips -->
+                                 <div class="text-start">
+                                     <h4 class="h5 text-center mb-3">Potential Reduction Tips:</h4>
+                                     <ul id="reduction-tips-list-results" class="list-group list-group-flush">
+                                         <li class="list-group-item text-center text-muted">Calculating tips...</li>
+                                     </ul>
+                                     <p class="text-center small text-muted mt-3">Explore the <a href="#duties">Duties</a> section for more role-specific ideas.</p>
+                                 </div>
+                             </div>
+                        </div>
+                        <!-- ================== END: Calculator Step Content ================== -->
+                    </div>
+                    <div class="d-flex justify-content-between mt-5 pt-4 border-top"> <!-- Navigation -->
+                         <button type="button" id="calc-prev-btn" class="btn btn-outline-secondary" disabled><i class="fas fa-arrow-left me-1"></i> Previous</button>
+                         <button type="button" id="calc-next-btn" class="btn btn-success">Next <i class="fas fa-arrow-right ms-1"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contributors Section -->
+        <section id="contributors" class="py-5">
+             <!-- ... Contributors content remains the same ... -->
+             <h2 class="text-center mb-4">Inspiring Climate Champions</h2>
+             <p class="text-center text-muted mb-4">Individuals making significant contributions.</p>
+             <div class="row g-4 justify-content-center" id="contributors-list"><div class="col-12 text-center"><div class="spinner-border text-secondary"><span class="visually-hidden">Loading...</span></div></div></div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+         <!-- ... Footer content remains the same ... -->
+        <div class="container"><p class="mb-1">© <span id="current-year"></span> Climate Action Now.</p><p class="small text-white-50">For educational purposes. Emission factors are estimates.</p></div>
+     </footer>
+
+    <!-- Role Suggestion Modal -->
+    <div class="modal fade" id="suggestRoleModal" tabindex="-1" aria-labelledby="suggestRoleModalLabel" aria-hidden="true">
+         <!-- ... Modal content remains the same ... -->
+       <div class="modal-dialog modal-dialog-centered"> <div class="modal-content"> <div class="modal-header"><h5 class="modal-title" id="suggestRoleModalLabel"><i class="fas fa-plus-circle me-2"></i> Suggest Role</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div> <div class="modal-body"> <form id="suggestRoleForm"> <div class="mb-3"><label for="suggestCategory" class="form-label">Industry/Category:</label><input type="text" class="form-control" id="suggestCategory" placeholder="e.g., Healthcare, Education" required></div> <div class="mb-3"><label for="suggestedRole" class="form-label">Role Title:</label><input type="text" class="form-control" id="suggestedRole" placeholder="e.g., Nurse, Teacher" required></div> <div class="mb-3"><label for="suggestedDuties" class="form-label">Suggest 1-3 Climate Actions:</label><textarea class="form-control" id="suggestedDuties" rows="3" placeholder="Example: 1. Action one..." required></textarea></div> </form> </div> <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button type="button" class="btn btn-primary" id="submitSuggestionBtn"><i class="fas fa-paper-plane me-1"></i> Submit</button></div> </div> </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- ... Script includes remain the same ... -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="js/data.js"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/script.js"></script>
+
+</body>
+</html>
