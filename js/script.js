@@ -1,3 +1,8 @@
+// WARNING: API Key is embedded directly in the code.
+// This is generally discouraged for security reasons in production applications.
+// It is done here based on user request for this specific context.
+const EMBEDDED_API_KEY = "f73a898f8c74a6d09f20d63088b4a9dd"; // Your actual API key
+
 $(document).ready(function () {
   // --- Navbar Active Link Highlighting ---
   const sections = $("section[id]");
@@ -8,12 +13,16 @@ $(document).ready(function () {
     let currentSectionId = null;
     sections.each(function () {
       const top = $(this).offset().top;
-      if (top === 0 && $(this).attr("id") !== "home") return; // Skip if offset invalid (rare case)
+      if (top <= 1 && $(this).attr("id") !== "home") return;
       const bottom = top + $(this).outerHeight();
       if (cur_pos >= top && cur_pos <= bottom) {
         currentSectionId = $(this).attr("id");
+        return false;
       }
     });
+    if (!currentSectionId && $(window).scrollTop() < sections.first().offset().top) {
+        currentSectionId = 'home';
+    }
     navLi.find("a").removeClass("active");
     const activeLink = currentSectionId
       ? navLi.find(`a[href="#${currentSectionId}"]`)
@@ -34,285 +43,308 @@ $(document).ready(function () {
     if ($target.length) {
       $("html, body")
         .stop()
-        .animate({ scrollTop: $target.offset().top - 56 }, 500, "swing", () =>
-          $(e.target).blur()
-        );
+        .animate({ scrollTop: $target.offset().top - 56 }, 500, "swing", () => {
+            $(e.target).blur();
+            checkActiveSection();
+        });
     }
   });
 
   // --- Climate Clock ---
-  const clockInterval = setInterval(updateClimateClock, 1000); // Store interval ID
+  const clockInterval = setInterval(updateClimateClock, 1000);
   function updateClimateClock() {
-    const deadline = new Date("2030-01-01T00:00:00Z").getTime(); // Placeholder - UPDATE!
+    const deadline = new Date("2029-01-01T00:00:00Z").getTime(); // <<<=== UPDATE THIS!
     const now = new Date().getTime();
     const timeLeft = deadline - now;
     if (timeLeft <= 0) {
       $("#climate-clock").html(
-        `<span class="text-danger fw-bold">Time is Up!</span>`
+        `<span class="text-danger fw-bold">Budget Depleted (Based on Estimate)!</span>`
       );
       clearInterval(clockInterval);
       return;
     }
-    const years = Math.floor(timeLeft / (365.25 * 86400000));
-    const days = Math.floor((timeLeft / 86400000) % 365.25);
-    const hours = Math.floor((timeLeft / 3600000) % 24);
-    const minutes = Math.floor((timeLeft / 60000) % 60);
-    const seconds = Math.floor((timeLeft / 1000) % 60);
+    const secondsInDay = 86400;
+    const secondsInHour = 3600;
+    const secondsInMinute = 60;
+    const secondsInYear = 31556952;
+    let remainingSeconds = Math.floor(timeLeft / 1000);
+    const years = Math.floor(remainingSeconds / secondsInYear);
+    remainingSeconds -= years * secondsInYear;
+    const days = Math.floor(remainingSeconds / secondsInDay);
+    remainingSeconds -= days * secondsInDay;
+    const hours = Math.floor(remainingSeconds / secondsInHour);
+    remainingSeconds -= hours * secondsInHour;
+    const minutes = Math.floor(remainingSeconds / secondsInMinute);
+    remainingSeconds -= minutes * secondsInMinute;
+    const seconds = remainingSeconds;
     $("#clock-years").text(years);
     $("#clock-days").text(String(days).padStart(3, "0"));
     $("#clock-hours").text(String(hours).padStart(2, "0"));
     $("#clock-minutes").text(String(minutes).padStart(2, "0"));
     $("#clock-seconds").text(String(seconds).padStart(2, "0"));
   }
-  updateClimateClock(); // Initial call
-  const apii = document.querySelector('meta[name="api-key"]').getAttribute('content');
+  updateClimateClock();
 
   // --- Weather & Future Climate ---
+  // API Key is now embedded directly
+  const openWeatherApiKey = EMBEDDED_API_KEY;
+  // console.log("Using Embedded API Key:", openWeatherApiKey); // For debugging if needed
+
   const $weatherInfo = $("#weather-info");
   const $manualForm = $("#manual-location-form");
   const $locationPlaceholders = $(".location-name");
-  const openWeatherApiKey = apii; // !!! <<<=== PASTE YOUR REAL KEY HERE ===!!!
 
   function fetchWeather(lat, lon) {
-    /* Fetches Weather and AQI */ if (
-      !openWeatherApiKey ||
-      openWeatherApiKey === apii
-    ) {
-      displayWeatherError("API Key needed for weather.", false);
-      console.error("OWM Key missing!");
-      return;
+    /* Fetches Weather and AQI */
+    // REMOVED API Key check here as it's embedded
+    if (!openWeatherApiKey) { // Basic check if somehow it's still empty
+        console.error("Embedded API Key is missing!");
+        displayWeatherError("API Key configuration error.", true);
+        return;
     }
+
     const units = "metric";
     const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${openWeatherApiKey}`;
     const aqUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${openWeatherApiKey}`;
+
     $weatherInfo
       .html(
         `<p><span class="spinner-border spinner-border-sm"></span> Fetching weather...</p>`
       )
-      .removeClass("border rounded p-3 bg-white"); // Show loading
-    Promise.allSettled([fetch(weatherUrl), fetch(aqUrl)]).then(
-      handleWeatherResponses
-    );
+      .removeClass("border rounded p-3 bg-white");
+
+    Promise.allSettled([fetch(weatherUrl), fetch(aqUrl)])
+      .then(handleWeatherResponses)
+      .catch(error => {
+          console.error("Network or fetch error:", error);
+          displayWeatherError("Network error fetching weather.", true);
+      });
   }
+
   function handleWeatherResponses(results) {
-    /* Processes fetch responses */ let weatherData = null,
-      airData = null,
-      locationName = "your area";
-    if (results[0].status === "fulfilled") {
-      // Weather promise
-      const weatherResult = results[0].value;
-      weatherResult
-        .json()
-        .then((data) => {
+    /* Processes fetch responses */
+    let weatherPromise = results[0];
+    let aqPromise = results[1];
+    let weatherData = null;
+    let airData = null;
+    let locationName = "your area";
+    let fetchError = false;
+
+    if (weatherPromise.status === "fulfilled") {
+      weatherPromise.value.json()
+        .then(data => {
           if (data?.cod === 200 && data?.name) {
             weatherData = data;
-            locationName = data.name;
+            locationName = data.name + (data.sys?.country ? ', ' + data.sys.country : '');
             sessionStorage.setItem("weatherLocationName", locationName);
           } else {
-            throw new Error(data?.message || "Invalid weather data");
+            console.error("Invalid weather data received:", data);
+            // Check for specific API key errors from OpenWeatherMap
+             if (data?.cod === 401) {
+                 throw new Error("Invalid API Key (Unauthorized)");
+             } else {
+                 throw new Error(data?.message || "Invalid weather data format");
+             }
           }
-          // Check AQI only after successful weather fetch
-          if (results[1].status === "fulfilled") {
-            results[1].value
-              .json()
-              .then((aqD) => {
-                if (aqD?.list?.[0]) airData = aqD;
-              })
-              .catch(() => {
-                /* ignore AQI parse error*/
-              })
-              .finally(() => {
-                displayWeather(weatherData, airData);
-                updateLocationPlaceholders(locationName);
-              });
+
+          if (aqPromise.status === "fulfilled") {
+             aqPromise.value.json()
+               .then(aqD => {
+                   if (aqD?.list?.[0]) { airData = aqD; }
+               })
+               .catch(aqErr => { console.warn("AQI JSON parsing error:", aqErr); })
+               .finally(() => {
+                   displayWeather(weatherData, airData);
+                   updateLocationPlaceholders(locationName);
+               });
           } else {
-            console.warn("AQI Fetch Error:", results[1].reason);
+            console.warn("AQI Fetch Error:", aqPromise.reason);
             displayWeather(weatherData, null);
             updateLocationPlaceholders(locationName);
           }
         })
-        .catch((err) => {
+        .catch(err => {
           console.error("Weather processing error:", err);
-          displayWeatherError("Error processing weather data.", true);
+          displayWeatherError(`Error processing weather: ${err.message}.`, true);
           updateLocationPlaceholders("your area");
+          fetchError = true;
         });
     } else {
-      console.error("Weather Fetch Error:", results[0].reason);
-      displayWeatherError("Could not fetch weather data.", true);
+      console.error("Weather Fetch Error:", weatherPromise.reason);
+       // Try to get more specific error info if possible
+       let reasonText = weatherPromise.reason?.message || "Could not fetch weather data";
+       if (weatherPromise.reason instanceof TypeError && weatherPromise.reason.message.includes('API key')) {
+            reasonText = "Invalid API Key (Network Error)"; // Common symptom
+       }
+      displayWeatherError(`${reasonText}.`, true);
       updateLocationPlaceholders("your area");
+      fetchError = true;
     }
   }
+
   function displayWeather(wData, aData) {
-    /* Renders Weather and AQI */ if (
-      !wData?.main ||
-      !wData?.weather?.[0] ||
-      !wData?.name
-    ) {
-      displayWeatherError("Incomplete weather data.", false);
-      return;
+    /* Renders Weather and AQI */
+    if (!wData?.main || !wData?.weather?.[0] || !wData?.name || !wData?.sys) {
+        console.error("Incomplete weather data passed to displayWeather:", wData);
+        displayWeatherError("Received incomplete weather data.", false);
+        return;
     }
     const { main, weather, wind, name, sys } = wData;
     const temp = main.temp.toFixed(1);
     const feels = main.feels_like.toFixed(1);
-    const desc = weather[0].description.replace(/\b\w/g, (l) =>
-      l.toUpperCase()
-    );
-    const icon = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+    const desc = weather[0].description.replace(/\b\w/g, (l) => l.toUpperCase());
+    const iconCode = weather[0].icon;
+    const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
     const humidity = main.humidity;
     const windS = wind.speed.toFixed(1);
     const country = sys.country;
-    let aqiTxt = "N/A",
-      aqiCls = "text-muted";
+    let aqiTxt = "N/A", aqiCls = "text-muted";
     if (aData?.list?.[0]?.main?.aqi) {
-      const aqi = aData.list[0].main.aqi;
-      aqiTxt = ["Good", "Fair", "Mod.", "Poor", "V. Poor"][aqi - 1] ?? "N/A";
-      aqiCls =
-        [
-          "text-success",
-          "text-success",
-          "text-warning",
-          "text-danger",
-          "text-danger fw-bold",
-        ][aqi - 1] ?? "text-muted";
+        const aqi = aData.list[0].main.aqi;
+        aqiTxt = ["Good", "Fair", "Moderate", "Poor", "Very Poor"][aqi - 1] ?? "N/A";
+        aqiCls = ["text-success", "text-success", "text-warning", "text-danger", "text-danger fw-bold"][aqi - 1] ?? "text-muted";
     }
-    $weatherInfo
-      .html(
-        `<h4><i class="fas fa-map-marker-alt me-1 text-primary"></i> ${name}, ${country}</h4><div class="d-flex align-items-center justify-content-center mb-1"><img src="${icon}" alt="${desc}" width="50" height="50"><span class="fs-2 fw-bold ms-2">${temp}°C</span></div><p class="mb-1 small text-muted">Feels like ${feels}°C. ${desc}.</p><div class="small d-flex justify-content-center flex-wrap gap-3"><span title="Humidity"><i class="fas fa-tint me-1 text-info"></i>${humidity}%</span><span title="Wind Speed"><i class="fas fa-wind me-1 text-secondary"></i>${windS} m/s</span><span title="Air Quality Index"><i class="fas fa-smog me-1 ${aqiCls}"></i>AQI: <span class="${aqiCls}">${aqiTxt}</span></span></div>`
-      )
-      .addClass("border rounded p-3 bg-white"); // Add container style on success
-    $manualForm.addClass("d-none"); // Hide manual form
+    const weatherHtml = `<h4><i class="fas fa-map-marker-alt me-1 text-primary"></i> ${name}, ${country}</h4><div class="d-flex align-items-center justify-content-center mb-1"><img src="${iconUrl}" alt="${desc}" width="50" height="50"><span class="fs-2 fw-bold ms-2">${temp}°C</span></div><p class="mb-1 small text-muted">Feels like ${feels}°C. ${desc}.</p><div class="small d-flex justify-content-center flex-wrap gap-3"><span title="Humidity"><i class="fas fa-tint me-1 text-info"></i> ${humidity}%</span><span title="Wind Speed"><i class="fas fa-wind me-1 text-secondary"></i> ${windS} m/s</span><span title="Air Quality Index"><i class="fas fa-smog me-1 ${aqiCls}"></i> AQI: <span class="${aqiCls}">${aqiTxt}</span></span></div>`;
+    $weatherInfo.html(weatherHtml).addClass("border rounded p-3 bg-white");
+    $manualForm.addClass("d-none");
   }
+
   function displayWeatherError(msg, showManual) {
-    $weatherInfo
-      .html(
-        `<p class="text-danger mb-0"><i class="fas fa-exclamation-triangle me-1"></i> ${msg}</p>`
-      )
-      .removeClass("border rounded p-3 bg-white");
-    if (showManual) $manualForm.removeClass("d-none");
+    $weatherInfo.html(`<p class="text-danger mb-0"><i class="fas fa-exclamation-triangle me-1"></i> ${msg}</p>`).removeClass("border rounded p-3 bg-white");
+    if (showManual) { $manualForm.removeClass("d-none"); }
+    else { $manualForm.addClass("d-none"); }
   }
+
   function updateLocationPlaceholders(locName) {
-    $locationPlaceholders.text(
-      locName ? locName.split(",")[0].trim() : "your area"
-    );
+    const finalName = sessionStorage.getItem("weatherLocationName") || locName || "your area";
+    const cityPart = finalName.split(",")[0].trim() || "your area";
+    $locationPlaceholders.text(cityPart);
   }
-  function fetchWeatherByCity(city, country, state) {
-    /* Fetches via City Name */ if (
-      !openWeatherApiKey ||
-      openWeatherApiKey === apii
-    ) {
-      displayWeatherError("API Key needed.", false);
-      return;
+
+  function fetchWeatherByCity(city, country, state = "") {
+    /* Fetches via City Name */
+    // REMOVED API Key check here as it's embedded
+    if (!openWeatherApiKey) { // Basic check
+        console.error("Embedded API Key is missing!");
+        displayWeatherError("API Key configuration error.", false);
+        return;
     }
-    const query = `${city}${state ? "," + state : ""},${country}`;
-    const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
-      query
-    )}&limit=1&appid=${openWeatherApiKey}`;
-    $weatherInfo
-      .html(
-        `<p><span class="spinner-border spinner-border-sm"></span> Looking up ${city}...</p>`
-      )
-      .removeClass("border rounded p-3 bg-white");
+    if (!city || !country) {
+        displayWeatherError("City and Country are required.", false);
+        return;
+    }
+    const query = `${city}${state ? "," + state.trim() : ""},${country}`;
+    const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=1&appid=${openWeatherApiKey}`;
+    $weatherInfo.html(`<p><span class="spinner-border spinner-border-sm"></span> Looking up ${city}...</p>`).removeClass("border rounded p-3 bg-white");
     fetch(geoUrl)
-      .then((r) => r.json())
-      .then((d) => {
-        if (d?.length > 0) fetchWeather(d[0].lat, d[0].lon);
-        else throw new Error("Not found");
+      .then(response => {
+          if (!response.ok) {
+              // Check specifically for 401 Unauthorized, which usually means bad API key for Geocoding
+              if (response.status === 401) {
+                   throw new Error(`Geocoding failed: Invalid API Key (Unauthorized)`);
+              }
+              throw new Error(`Geocoding failed: ${response.statusText} (Status ${response.status})`);
+          }
+          return response.json();
+       })
+      .then(data => {
+        if (data && data.length > 0) {
+          fetchWeather(data[0].lat, data[0].lon);
+        } else {
+          throw new Error(`Location "${city}" not found.`);
+        }
       })
-      .catch((e) =>
-        displayWeatherError(`Couldn't find weather for ${city}.`, true)
-      );
+      .catch(error => {
+        console.error("Geocoding or subsequent fetch error:", error);
+        displayWeatherError(`Couldn't find weather for ${city}. ${error.message}`, true);
+      });
   }
+
+  // Manual Location Form Submission
   $manualForm.on("submit", function (e) {
     e.preventDefault();
-    fetchWeatherByCity(
-      $("#cityInput").val().trim(),
-      $("#countryInput").val(),
-      $("#stateInput").val().trim()
-    );
+    const city = $("#cityInput").val().trim();
+    const country = $("#countryInput").val();
+    const state = $("#stateInput").val().trim();
+    fetchWeatherByCity(city, country, state);
   });
+
   function tryGeolocation() {
-    /* Attempts Geolocation */ if ("geolocation" in navigator) {
+    /* Attempts Geolocation */
+    if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (p) => fetchWeather(p.coords.latitude, p.coords.longitude),
-        (e) => {
-          console.warn("Geo Error:", e.message);
-          displayWeatherError("Auto location failed.", true);
-          fetchWeatherByCity("Ahmedabad", "IN");
-          updateLocationPlaceholders("Ahmedabad (default)");
+        (position) => { fetchWeather(position.coords.latitude, position.coords.longitude); },
+        (error) => {
+            console.warn("Geolocation Error:", error.message);
+            // Don't display the generic "API Key missing" error here, let fetchWeatherByCity handle API issues
+            displayWeatherError("Auto location failed. Showing default/manual input.", true);
+            fetchWeatherByCity("Ahmedabad", "IN");
+            updateLocationPlaceholders("Ahmedabad (default)");
         },
-        { timeout: 7000 }
+        { timeout: 8000 }
       );
     } else {
-      displayWeatherError("Geolocation unavailable.", true);
+      displayWeatherError("Geolocation unavailable. Showing default/manual input.", true);
       fetchWeatherByCity("Ahmedabad", "IN");
       updateLocationPlaceholders("Ahmedabad (default)");
     }
   }
-  tryGeolocation(); // Attempt on load
+
+  // --- Initial Weather Load ---
+  tryGeolocation(); // Attempt geolocation on page load
 
   // --- Role-Based Duties ---
   const $roleSelector = $("#role-selector");
   const $dutiesDisplay = $("#role-specific-duties-display");
   if (typeof roleDuties === "object" && Object.keys(roleDuties).length > 0) {
-    $.each(roleDuties, (key, cat) =>
-      $roleSelector.append($("<option>", { value: key, text: cat.title }))
-    );
-  } else {
-    $dutiesDisplay.html('<p class="text-warning">Role data unavailable.</p>');
-  }
-  $roleSelector.on("change", function () {
-    /* Handles Role Display */ const key = $(this).val();
-    const catData = roleDuties[key];
-    $dutiesDisplay.empty();
-    if (!key || !catData?.roles) {
-      $dutiesDisplay.html('<p class="text-muted">Select category.</p>');
-      return;
-    }
-    let html = `<h5 class="text-center fw-normal mb-3">Actions for Roles in ${catData.title}:</h5><div class="accordion accordion-flush" id="rolesAccordionInner">`;
-    let i = 0;
-    $.each(catData.roles, (rKey, rData) => {
-      if (rData?.title && rData?.duties?.length > 0) {
-        const cId = `c-${key}-${rKey}-${i}`;
-        const hId = `h-${key}-${rKey}-${i}`;
-        html += `<div class="accordion-item"><h2 class="accordion-header" id="${hId}"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}" aria-controls="${cId}"><i class="fas fa-user-tie fa-fw me-2"></i> ${
-          rData.title
-        }</button></h2><div id="${cId}" class="accordion-collapse collapse" data-bs-parent="#rolesAccordionInner"><div class="accordion-body"><ul>${rData.duties
-          .map(
-            (d) =>
-              `<li><i class="fas fa-check-circle text-success me-2"></i>${d}</li>`
-          )
-          .join("")}</ul></div></div></div>`;
-        i++;
-      }
+    $.each(roleDuties, (categoryKey, categoryData) => {
+        if (categoryData?.title) {
+            $roleSelector.append($("<option>", { value: categoryKey, text: categoryData.title }));
+        }
     });
-    html += "</div>";
-    $dutiesDisplay.html(
-      html ||
-        `<p class="text-warning text-center mt-3">No specific roles listed for ${catData.title}.</p>`
-    );
-  });
+    $roleSelector.on("change", function () {
+      const selectedCategoryKey = $(this).val();
+      const categoryData = roleDuties[selectedCategoryKey];
+      $dutiesDisplay.empty();
+      if (!selectedCategoryKey || !categoryData?.roles) {
+        $dutiesDisplay.html('<p class="text-muted text-center">Select a category to see role-specific actions.</p>');
+        return;
+      }
+      let rolesHtml = `<h5 class="text-center fw-normal mb-3">Actions for Roles in ${categoryData.title}:</h5><div class="accordion accordion-flush" id="rolesAccordionInner">`;
+      let roleIndex = 0;
+      let hasRoles = false;
+      $.each(categoryData.roles, (roleKey, roleData) => {
+        if (roleData?.title && Array.isArray(roleData.duties) && roleData.duties.length > 0) {
+          hasRoles = true;
+          const collapseId = `collapse-${selectedCategoryKey}-${roleKey}-${roleIndex}`;
+          const headerId = `header-${selectedCategoryKey}-${roleKey}-${roleIndex}`;
+          rolesHtml += `<div class="accordion-item"><h2 class="accordion-header" id="${headerId}"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}"><i class="fas fa-user-tie fa-fw me-2"></i> ${roleData.title}</button></h2><div id="${collapseId}" class="accordion-collapse collapse" aria-labelledby="${headerId}" data-bs-parent="#rolesAccordionInner"><div class="accordion-body"><ul class="list-unstyled">${roleData.duties.map(duty => `<li><i class="fas fa-check-circle text-success me-1 fa-fw"></i> ${duty}</li>`).join("")}</ul></div></div></div>`;
+          roleIndex++;
+        }
+      });
+      rolesHtml += '</div>';
+      if (hasRoles) { $dutiesDisplay.html(rolesHtml); }
+      else { $dutiesDisplay.html(`<p class="text-warning text-center mt-3">No specific roles with actions listed for ${categoryData.title}.</p>`); }
+    });
+  } else {
+    $dutiesDisplay.html('<p class="text-danger text-center">Role data could not be loaded.</p>');
+    $roleSelector.prop('disabled', true);
+  }
 
   // --- Populate Contributors ---
-  const $contribList = $("#contributors-list").empty(); // Clear spinner
-  if (typeof contributors === "object" && contributors.length > 0) {
-    contributors.forEach((p) => {
-      const imgHtml = p.image
-        ? `<img src="${p.image}" class="contributor-img" alt="${p.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
-        : "";
-      const placeholder = `<div class="contributor-img-placeholder" style="${
-        p.image ? "display:none;" : "display:flex;"
-      }" title="${
-        p.name
-      }"><i class="fas fa-user fa-2x text-secondary"></i></div>`;
-      const link =
-        p.link && p.link !== "#"
-          ? `<a href="${p.link}" target="_blank" class="btn btn-sm btn-outline-primary mt-2 align-self-center">Learn More <i class="fas fa-external-link-alt fa-xs"></i></a>`
-          : "";
-      $contribList.append(
-        `<div class="col-md-6 col-lg-4 d-flex"><div class="card h-100 text-center contributor-card mb-4 w-100 shadow-sm">${imgHtml}${placeholder}<div class="card-body d-flex flex-column pt-2"><h5 class="card-title mt-2 mb-1">${p.name}</h5><p class="card-text flex-grow-1 small text-muted">${p.description}</p>${link}</div></div></div>`
-      );
-    });
-  } else $contribList.html('<p class="text-center text-muted">Contributors data not available.</p>');
+  // **ACTION NEEDED:** Make sure the image paths in data.js are correct!
+  const $contribList = $("#contributors-list");
+  if (typeof contributors === "object" && Array.isArray(contributors) && contributors.length > 0) {
+      $contribList.empty();
+      contributors.forEach((person) => {
+          const imgHtml = person.image ? `<img src="${person.image}" class="contributor-img rounded-circle mb-3 mx-auto" alt="${person.name}" style="width: 100px; height: 100px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : '';
+          const placeholderHtml = `<div class="contributor-img-placeholder rounded-circle mb-3 mx-auto bg-light d-flex align-items-center justify-content-center" style="${person.image ? 'display:none;' : 'display:flex;'} width: 100px; height: 100px;" title="${person.name}"><i class="fas fa-user fa-2x text-secondary"></i></div>`;
+          const linkHtml = (person.link && person.link !== '#') ? `<a href="${person.link}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary mt-auto align-self-center">Learn More <i class="fas fa-external-link-alt fa-xs ms-1"></i></a>` : '<div class="mt-auto"></div>';
+          $contribList.append(`<div class="col-md-6 col-lg-4 d-flex align-items-stretch"><div class="card h-100 text-center contributor-card mb-4 w-100 shadow-sm p-3">${imgHtml}${placeholderHtml}<div class="card-body d-flex flex-column p-0 pt-2"><h5 class="card-title mt-2 mb-1">${person.name}</h5><p class="card-text flex-grow-1 small text-muted mb-3">${person.description}</p>${linkHtml}</div></div></div>`);
+      });
+  } else {
+      $contribList.html('<p class="text-center text-muted col-12">Contributors data not available.</p>');
+  }
 
   // --- Footer Year ---
   $("#current-year").text(new Date().getFullYear());
@@ -321,21 +353,29 @@ $(document).ready(function () {
   $("#submitSuggestionBtn").on("click", function () {
     const form = $("#suggestRoleForm")[0];
     if (!form.checkValidity()) {
-      form.reportValidity();
-      return;
+        form.classList.add('was-validated');
+        return;
     }
-    const category = $("#suggestCategory").val().trim(),
-      role = $("#suggestedRole").val().trim(),
-      duties = $("#suggestedDuties").val().trim();
-    console.log("Suggestion:", { category, role, duties }); // In real app, send to backend
-    bootstrap.Modal.getInstance($("#suggestRoleModal")[0])?.hide();
+    form.classList.remove('was-validated');
+    const category = $("#suggestCategory").val().trim();
+    const role = $("#suggestedRole").val().trim();
+    const duties = $("#suggestedDuties").val().trim();
+    console.log("Role Suggestion Submitted:", { category, role, duties });
+    alert("Thank you for your suggestion!");
+    const modalInstance = bootstrap.Modal.getInstance($("#suggestRoleModal")[0]);
+    if (modalInstance) { modalInstance.hide(); }
     form.reset();
-    // Consider adding a small success message alert/toast
+  });
+   $('#suggestRoleModal').on('hidden.bs.modal', function () {
+      const form = $("#suggestRoleForm")[0];
+      form.classList.remove('was-validated');
+      form.reset();
+   });
+
+  // --- Activate Bootstrap Tooltips ---
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
   });
 
-  // --- Activate Bootstrap Tooltips (Global) ---
-  const tooltipTriggerList = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="tooltip"]')
-  );
-  tooltipTriggerList.map((el) => new bootstrap.Tooltip(el));
 }); // End (document).ready()
