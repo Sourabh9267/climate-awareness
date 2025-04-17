@@ -65,7 +65,7 @@ $(document).ready(function () {
     $("#clock-seconds").text(String(seconds).padStart(2, "0"));
   }
   updateClimateClock(); // Initial call
-const apii='__API_KEY__';
+  const apii = document.querySelector('meta[name="api-key"]').getAttribute('content');
 
   // --- Weather & Future Climate ---
   const $weatherInfo = $("#weather-info");
