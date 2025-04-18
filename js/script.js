@@ -1,3 +1,5 @@
+// --- START OF FILE script.js ---
+
 // WARNING: API Key is embedded directly in the code.
 // This is generally discouraged for security reasons in production applications.
 // It is done here based on user request for this specific context.
@@ -50,40 +52,161 @@ $(document).ready(function () {
     }
   });
 
-  // --- Climate Clock ---
-  const clockInterval = setInterval(updateClimateClock, 1000);
-  function updateClimateClock() {
-    const deadline = new Date("2029-01-01T00:00:00Z").getTime(); // <<<=== UPDATE THIS!
+// Climate Clock API Integration
+  let climateDeadlineTimestamp = null; // Store the fetched deadline
+  let clockDisplayInterval = null; // Interval ID for the display updates
+
+  function updateClockDisplay() {
+    // Only proceed if we have a valid deadline timestamp
+    if (!climateDeadlineTimestamp) {
+        // This shouldn't normally be called if the interval is managed correctly,
+        // but adding a safeguard.
+        console.warn("updateClockDisplay called without a deadline.");
+        if (clockDisplayInterval) clearInterval(clockDisplayInterval);
+         // Ensure loading isn't stuck if something went wrong before interval start
+        if ($("#climate-clock").html().includes("Loading")) {
+             displayClockError("Failed to update clock.");
+        }
+        return;
+    }
+
+    const deadline = new Date(climateDeadlineTimestamp).getTime();
     const now = new Date().getTime();
     const timeLeft = deadline - now;
+
+    // Check if the deadline has passed
     if (timeLeft <= 0) {
       $("#climate-clock").html(
-        `<span class="text-danger fw-bold">Budget Depleted (Based on Estimate)!</span>`
+        `<span class="text-danger fw-bold">Budget Depleted (Based on Live Data)!</span>`
       );
-      clearInterval(clockInterval);
+      if (clockDisplayInterval) clearInterval(clockDisplayInterval); // Stop updating
       return;
     }
+
+    // Calculation constants
     const secondsInDay = 86400;
     const secondsInHour = 3600;
     const secondsInMinute = 60;
-    const secondsInYear = 31556952;
-    let remainingSeconds = Math.floor(timeLeft / 1000);
-    const years = Math.floor(remainingSeconds / secondsInYear);
-    remainingSeconds -= years * secondsInYear;
-    const days = Math.floor(remainingSeconds / secondsInDay);
-    remainingSeconds -= days * secondsInDay;
-    const hours = Math.floor(remainingSeconds / secondsInHour);
-    remainingSeconds -= hours * secondsInHour;
-    const minutes = Math.floor(remainingSeconds / secondsInMinute);
-    remainingSeconds -= minutes * secondsInMinute;
-    const seconds = remainingSeconds;
+    const secondsInYear = 31556952; // Average year length
+
+    let remainingSecondsTotal = Math.floor(timeLeft / 1000);
+
+    // Calculate years, days, hours, minutes, seconds
+    const years = Math.floor(remainingSecondsTotal / secondsInYear);
+    remainingSecondsTotal -= years * secondsInYear;
+
+    const days = Math.floor(remainingSecondsTotal / secondsInDay);
+    remainingSecondsTotal -= days * secondsInDay;
+
+    const hours = Math.floor(remainingSecondsTotal / secondsInHour);
+    remainingSecondsTotal -= hours * secondsInHour;
+
+    const minutes = Math.floor(remainingSecondsTotal / secondsInMinute);
+    remainingSecondsTotal -= minutes * secondsInMinute;
+
+    const seconds = remainingSecondsTotal;
+
+    // *** Ensure the clock structure exists before updating ***
+    // If the clock was showing an error or loading, recreate the spans
+    if ($("#clock-years").length === 0) {
+        $("#climate-clock").html(
+             `<span id="clock-years">--</span>y : <span id="clock-days">---</span>d : <span id="clock-hours">--</span>h : <span id="clock-minutes">--</span>m : <span id="clock-seconds">--</span>s`
+        );
+    }
+
+    // Update the DOM elements
     $("#clock-years").text(years);
     $("#clock-days").text(String(days).padStart(3, "0"));
     $("#clock-hours").text(String(hours).padStart(2, "0"));
     $("#clock-minutes").text(String(minutes).padStart(2, "0"));
     $("#clock-seconds").text(String(seconds).padStart(2, "0"));
   }
-  updateClimateClock();
+
+  // Renamed function for clarity
+  function startOrRestartDisplayInterval() {
+    // Clear any previous interval
+    if (clockDisplayInterval) {
+        clearInterval(clockDisplayInterval);
+        clockDisplayInterval = null; // Reset interval ID
+    }
+
+    // Only start interval if we have a valid deadline
+    if (climateDeadlineTimestamp) {
+        // Start the interval to update display every second
+        clockDisplayInterval = setInterval(updateClockDisplay, 1000);
+        console.log("Climate Clock display interval started."); // Debug log
+    } else {
+         console.warn("Not starting clock interval: No deadline timestamp."); // Debug log
+         displayClockError("Failed to start clock update.");
+    }
+  }
+
+  function displayClockError(message) {
+    $("#climate-clock").html(
+      `<span class="text-warning small fw-bold">${message}</span>`
+    );
+    // Stop any running interval if an error occurs
+    if (clockDisplayInterval) {
+        clearInterval(clockDisplayInterval);
+        clockDisplayInterval = null;
+    }
+  }
+
+  function fetchClimateClockData() {
+    const apiUrl = "https://api.climateclock.world/v1/clock";
+
+    // Show loading state initially or during refetch
+    // Only show loading if the clock isn't already showing numbers
+    if ($("#clock-years").length === 0) {
+         $("#climate-clock").html(`<span class="spinner-border spinner-border-sm"></span> Loading...`);
+    }
+
+    fetch(apiUrl)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data?.status === "success" && data?.data?.modules?.carbon_deadline_1?.timestamp) {
+          const newTimestamp = data.data.modules.carbon_deadline_1.timestamp;
+          console.log("Climate Clock Deadline Fetched:", newTimestamp); // For debugging
+
+          // Check if the timestamp has actually changed or if it's the first fetch
+          if (newTimestamp !== climateDeadlineTimestamp) {
+                climateDeadlineTimestamp = newTimestamp;
+                // *** CRITICAL FIX: Update display immediately after successful fetch ***
+                updateClockDisplay();
+                // Then start/restart the interval for subsequent updates
+                startOrRestartDisplayInterval();
+          } else if (!clockDisplayInterval) {
+              // If timestamp is the same but interval isn't running (e.g., first load), start it
+              startOrRestartDisplayInterval();
+          }
+
+        } else {
+          console.error("Invalid Climate Clock API data format (timestamp not found as expected):", data);
+          throw new Error("Invalid API data format.");
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching Climate Clock data:", error);
+        displayClockError(`Error fetching data: ${error.message}`);
+        climateDeadlineTimestamp = null; // Ensure no stale data is used
+        if (clockDisplayInterval) { // Stop updates on error
+            clearInterval(clockDisplayInterval);
+            clockDisplayInterval = null;
+        }
+      });
+  }
+
+  // Initial fetch on page load
+  fetchClimateClockData();
+
+  // Set interval to re-fetch the deadline periodically (e.g., every hour)
+  // This updates the actual deadline value from the API without stopping the second-by-second display interval
+  setInterval(fetchClimateClockData, 3600 * 1000); // 1 hour
 
   // --- Weather & Future Climate ---
   // API Key is now embedded directly
@@ -278,14 +401,14 @@ $(document).ready(function () {
             console.warn("Geolocation Error:", error.message);
             // Don't display the generic "API Key missing" error here, let fetchWeatherByCity handle API issues
             displayWeatherError("Auto location failed. Showing default/manual input.", true);
-            fetchWeatherByCity("Ahmedabad", "IN");
+            fetchWeatherByCity("Ahmedabad", "IN"); // Default fallback
             updateLocationPlaceholders("Ahmedabad (default)");
         },
         { timeout: 8000 }
       );
     } else {
       displayWeatherError("Geolocation unavailable. Showing default/manual input.", true);
-      fetchWeatherByCity("Ahmedabad", "IN");
+      fetchWeatherByCity("Ahmedabad", "IN"); // Default fallback
       updateLocationPlaceholders("Ahmedabad (default)");
     }
   }
