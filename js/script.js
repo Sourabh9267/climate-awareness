@@ -110,7 +110,7 @@ $(document).ready(function () {
     // If the clock was showing an error or loading, recreate the spans
     if ($("#clock-years").length === 0) {
         $("#climate-clock").html(
-             `<span id="clock-years">--</span>y : <span id="clock-days">---</span>d : <span id="clock-hours">--</span>h : <span id="clock-minutes">--</span>m : <span id="clock-seconds">--</span>s`
+             `<span id="clock-years" style="color:red;">--</span> y : <span id="clock-days" style="color:red !important;">---</span> d : <span style="color:red !important;" id="clock-hours">--</span> h : <span style="color:red !important;" id="clock-minutes">--</span> m : <span style="color:red !important;" id="clock-seconds">--</span>s`
         );
     }
 

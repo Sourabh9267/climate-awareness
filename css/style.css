@@ -1,3 +1,18 @@
+
+
+@font-face {
+    font-family: "digital";
+    src: url(fonts/digital-7.ttf);
+}
+
+.digi-font{
+    font-family: "digital" !important;
+    backdrop-filter: blur(100px);
+    background-color: rgba(0, 0, 0, 0.597);
+    border-radius: 100px;
+
+}
+
 :root {
     --nature-green: #27ae60;
     --dark-green: #1e8449;
