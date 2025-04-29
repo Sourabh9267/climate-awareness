@@ -1,9 +1,6 @@
 // --- START OF FILE script.js ---
 
-// WARNING: API Key is embedded directly in the code.
-// This is generally discouraged for security reasons in production applications.
-// It is done here based on user request for this specific context.
-const EMBEDDED_API_KEY = "f73a898f8c74a6d09f20d63088b4a9dd"; // Your actual API key
+const EMBEDDED_API_KEY = "f73a898f8c74a6d09f20d63088b4a9dd";
 
 $(document).ready(function () {
   // --- Navbar Active Link Highlighting ---
